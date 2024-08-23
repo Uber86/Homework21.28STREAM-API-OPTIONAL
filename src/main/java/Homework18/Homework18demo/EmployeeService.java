@@ -8,34 +8,50 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-public class EmployeeService {
+public class EmployeeService implements EmployeeServicee{
     private static final int maxEmployee = 10;
 
-    private final List<Employee> employees = new ArrayList<>(maxEmployee);
+    private final List<Employee> employees = new ArrayList<>(List.of(
+            new Employee("Liza",
+                    "Fedorovna",
+                    10000,
+                    1),
+            new Employee("Lina",
+                    "limbovsky",
+                    20000,
+                    1),
+            new Employee("Luna",
+                    "Savech",
+                    775130,
+                    2),
+            new Employee("Kolya",
+                    "Zamanuhovich",
+                    211100,
+                    2),
+            new Employee("Aly",
+                    "Muhhamad",
+                    99999999,
+                    3),
+            new Employee("Zina",
+                    "Zvereva",
+                    44543500,
+                    3)
+    ));
 
-    public void addEmployee(String firstName, String lastName) {
 
-        if (employees.size()> maxEmployee){
-            try {
-                throw new EmployeeStorageIsFullException();
-            } catch (EmployeeStorageIsFullException a) {
-                throw new RuntimeException("Нет места в компании.");
-            }
-         }
-
-        Employee emp = new Employee(firstName, lastName);
-        if (employees.contains(emp)) {
-            try {
-                throw new EmployeeAlreadyAddedException();
-            } catch (EmployeeAlreadyAddedException b) {
-                throw new RuntimeException("Данный сотрудник уже работает в компании.");
-            }
+    @Override
+    public void addEmployee(String firstName, String lastName, int salary, int deport) {
+        Employee employee = new Employee(firstName, lastName, salary, deport);
+        if (employees.size() > maxEmployee) {
+            throw new EmployeeStorageIsFullException();
         }
-        employees.add(emp);
-
-
+        if (employees.contains(employee)) {
+            throw new EmployeeAlreadyAddedException();
+        }
+        employees.add(employee);
     }
 
+    @Override
     public void removeEmployee(String firstName, String lastName) {
         for (Employee employee : employees) {
             if (employee.getFirstName().equals(firstName) && employee.getLastName().equals(lastName)) {
@@ -43,29 +59,23 @@ public class EmployeeService {
                 return;
             }
         }
-        try {
-            throw new EmployeeNotFoundException();
-        } catch (EmployeeNotFoundException c) {
-            throw new RuntimeException("Сотрудник не найден");
-        }
+        throw new EmployeeNotFoundException();
     }
 
-
+    @Override
     public Employee findEmployee(String firstName, String lastName) {
         for (Employee employee : employees) {
             if (employee.getFirstName().equals(firstName) && employee.getLastName().equals(lastName)) {
-
                 return employee;
             }
-        }
-        try {
             throw new EmployeeNotFoundException();
-        } catch (EmployeeNotFoundException c) {
-            throw new RuntimeException("Сотрудник не найден");
         }
+        return null;
     }
-
+    @Override
     public Collection<Employee> getAll() {
         return Collections.unmodifiableCollection(employees);
     }
+
+
 }
